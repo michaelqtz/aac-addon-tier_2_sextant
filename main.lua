@@ -3,12 +3,14 @@ local api = require("api")
 local tier_2_sextant_addon = {
 	name = "Tier 2 Sextant",
 	author = "Michaelqt",
-	version = "1.0",
+	version = "1.1.0",
 	desc = "A better version of the sextant."
 }
 
 local tier2SextantWindow
 local treasureMapBtn
+local coordinatePromptWindow
+local coordinatePromptLabel
 
 local clockTimer = 0
 local clockResetTime = 1000
@@ -39,6 +41,63 @@ local function longitudeSextantToDegrees(direction, degrees, minutes, seconds)
 	xCoords = degrees + xCoords
 	if direction == "W" then xCoords = xCoords * -1 end
 	return (xCoords + 21) / coordCoef
+end 
+
+local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info) 
+	keyWord = "@coordinates"
+    isCoordsFound = string.find(msg, keyWord)
+	if isCoordsFound then 
+		-- Latitude/Longitude
+		local latDir = sextants.latitude
+		local latDeg = sextants.deg_lat
+		local latMin = sextants.min_lat
+		local latSec = sextants.sec_lat
+		local latitude = latitudeSextantToDegrees(latDir, latDeg, latMin, latSec)
+		local lonDir = sextants.longitude
+		local lonDeg = sextants.deg_long
+		local lonMin = sextants.min_long
+		local lonSec = sextants.sec_long
+		local longitude = longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
+
+		local coordinateString = lonDir .. " " .. lonDeg .. " " .. lonMin .. " " .. lonSec .. " " .. latDir .. " " .. latDeg .. " " .. latMin .. " " .. latSec
+
+		-- Adjust the prompt window based on type of coordinates
+		if string.find(msg, "swarm of Sunfish") then 
+			coordinatePromptWindow:SetTitle("Sunfish Found")
+			local coordinatePromptText = "A swarm of Sunfish has been found! \n \n  Would you like to find it on your map?"
+			api.Log:Info("[Tier 2 Sextant] Swarm of Sunfish found at " .. tostring(coordinateString))
+		elseif string.find(msg, "Perdita Statue Torso") then 
+			coordinatePromptWindow:SetTitle("Perdita Found")
+			local coordinatePromptText = "A Perdita Statue Torso pack has been found! \n \n  Would you like to find it on your map?"
+			api.Log:Info("[Tier 2 Sextant] Perdita Statue Torso pack found at " .. tostring(coordinateString))
+		elseif string.find(msg, "Leviathan carcass") then 
+			coordinatePromptWindow:SetTitle("Leviathan Dead")
+			local coordinatePromptText = "Leviathan is super dead! \n \n  Would you like to find it on your map?"
+			api.Log:Info("[Tier 2 Sextant] Leviathan's dead corpse is at " .. tostring(coordinateString))
+		elseif string.find(msg, "are being unlocked") then 
+			coordinatePromptWindow:SetTitle("Stolen Goods Unlocking")
+			local coordinatePromptText = "Territory goods are being unlocked. \n \n  Would you like to find it on your map?"
+			api.Log:Info("[Tier 2 Sextant] Territory goods are being unlocked at " .. tostring(coordinateString))
+		elseif string.find(msg, "Territory Warehouse") then 
+			coordinatePromptWindow:SetTitle("Warehouse Looted")
+			local coordinatePromptText = "A territory warehouse has been looted! \n \n  Would you like to find it on your map?"
+			api.Log:Info("[Tier 2 Sextant] A Territory Warehouse was looted at " .. tostring(coordinateString))
+		elseif string.find(msg, "mysterious crate") then 
+			coordinatePromptWindow:SetTitle("Mysterious Crate Found")
+			local coordinatePromptText = "Someone found a mysterious crate. \n \n  Would you like to find it on your map?"
+			api.Log:Info("[Tier 2 Sextant] A Mysterious Crate was found at " .. tostring(coordinateString))
+		end 
+		function coordinatePromptWindow.coordinatePromptYesBtn:OnClick()
+			api.Map:ToggleMapWithPortal(323, longitude, latitude, 100)
+			coordinatePromptWindow:Show(false)
+		end
+		coordinatePromptWindow.coordinatePromptYesBtn:SetHandler("OnClick", coordinatePromptWindow.coordinatePromptYesBtn.OnClick)
+		
+	end 
+	api.Log:Info("[Tier 2 Sextant] " .. tostring(msg))
+	-- api.Log:Info("[Tier 2 Sextant] " .. tostring(iconKey))
+	-- api.Log:Info(sextants)
+	-- api.Log:Info(info)
 end 
 
 local function OnLoad()
@@ -98,16 +157,63 @@ local function OnLoad()
 		end 
     end 
     clickOverlay:SetHandler("OnClick", clickOverlay.OnClick)
-	--
+	
+	--- Coordinate Prompt for various pop-ups
+	-- Actual window
+	coordinatePromptWindow = api.Interface:CreateWindow("coordinatePromptWindow", "Coordinates Found", 0, 0)
+	coordinatePromptWindow:AddAnchor("CENTER", "UIParent", 0, -150)
+	coordinatePromptWindow:SetExtent(300, 150)
+	-- Prompt label and buttons
+	local coordinatePromptText = "Aguru is a frog. \n \n  Would you like to know his true identity?"
+	-- local coordinatePromptText = "A Perdita Statue Torso has been found! \n \n  Would you like to find it on your map?"
+	coordinatePromptLabel = coordinatePromptWindow:CreateChildWidget("textbox", "coordinatePromptLabel", 0, true)
+	coordinatePromptLabel:SetText(coordinatePromptText)
+	coordinatePromptLabel:SetExtent(240, FONT_SIZE.LARGE * 2.5)
+	coordinatePromptLabel.style:SetAlign(ALIGN.CENTER)
+	ApplyTextColor(coordinatePromptLabel, FONT_COLOR.DEFAULT)
+	coordinatePromptLabel:AddAnchor("CENTER", coordinatePromptWindow, 0, 0)
+	coordinatePromptYesBtn = coordinatePromptWindow:CreateChildWidget("button", "coordinatePromptYesBtn", 0, true)
+	api.Interface:ApplyButtonSkin(coordinatePromptYesBtn, BUTTON_BASIC.DEFAULT)
+	coordinatePromptYesBtn:AddAnchor("BOTTOMLEFT", coordinatePromptWindow, 10, -10)
+	coordinatePromptYesBtn:SetText("Yes")
+	coordinatePromptNoBtn = coordinatePromptWindow:CreateChildWidget("button", "coordinatePromptNoBtn", 0, true)
+	api.Interface:ApplyButtonSkin(coordinatePromptNoBtn, BUTTON_BASIC.DEFAULT)
+	coordinatePromptNoBtn:AddAnchor("BOTTOMRIGHT", coordinatePromptWindow, -10, -10)
+	coordinatePromptNoBtn:SetText("No")
+	-- Starts off hidden (Hide the damn thing)
+	coordinatePromptWindow:Show(false)
+	-- Button clicky for no. (yes has its callback set when coordinates detected)
+	function coordinatePromptWindow.coordinatePromptNoBtn:OnClick()
+		coordinatePromptWindow:Show(false)
+	end
+	coordinatePromptWindow.coordinatePromptNoBtn:SetHandler("OnClick", coordinatePromptWindow.coordinatePromptNoBtn.OnClick)
+
+
+
+	function tier2SextantWindow:OnEvent(event, ...)
+        if event == "WORLD_MESSAGE" then
+            openCoordsPromptFromWorldMessage(unpack(arg))
+        end
+    end
+	tier2SextantWindow:SetHandler("OnEvent", tier2SextantWindow.OnEvent)
+    tier2SextantWindow:RegisterEvent("WORLD_MESSAGE")
+
     api.On("UPDATE", OnUpdate)
 	api.SaveSettings()
 end
 
 local function OnUnload()
 	api.On("UPDATE", function() return end)
-	-- treasureMapBtn:Show(false)
-	tier2SextantWindow:Show(false)
-	treasureMapBtn = nil
+	-- tier2SextantWindow = api.Interface:Free(tier2SextantWindow)
+	if tier2SextantWindow ~= nil then 
+		tier2SextantWindow:Show(false)
+		tier2SextantWindow:ReleaseHandler("OnEvent")
+		tier2SextantWindow = nil
+	end 
+	if treasureMapBtn ~= nil then 
+		-- treasureMapBtn:Show(false)
+		treasureMapBtn = nil
+	end 
 end
 
 tier_2_sextant_addon.OnLoad = OnLoad
