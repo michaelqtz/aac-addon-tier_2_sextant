@@ -65,26 +65,32 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 		if string.find(msg, "swarm of Sunfish") then 
 			coordinatePromptWindow:SetTitle("Sunfish Found")
 			local coordinatePromptText = "A swarm of Sunfish has been found! \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Swarm of Sunfish found at " .. tostring(coordinateString))
 		elseif string.find(msg, "Perdita Statue Torso") then 
 			coordinatePromptWindow:SetTitle("Perdita Found")
 			local coordinatePromptText = "A Perdita Statue Torso pack has been found! \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Perdita Statue Torso pack found at " .. tostring(coordinateString))
 		elseif string.find(msg, "Leviathan carcass") then 
 			coordinatePromptWindow:SetTitle("Leviathan Dead")
 			local coordinatePromptText = "Leviathan is super dead! \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Leviathan's dead corpse is at " .. tostring(coordinateString))
 		elseif string.find(msg, "are being unlocked") then 
 			coordinatePromptWindow:SetTitle("Stolen Goods Unlocking")
 			local coordinatePromptText = "Territory goods are being unlocked. \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Territory goods are being unlocked at " .. tostring(coordinateString))
 		elseif string.find(msg, "Territory Warehouse") then 
 			coordinatePromptWindow:SetTitle("Warehouse Looted")
 			local coordinatePromptText = "A territory warehouse has been looted! \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Territory Warehouse was looted at " .. tostring(coordinateString))
 		elseif string.find(msg, "mysterious crate") then 
 			coordinatePromptWindow:SetTitle("Mysterious Crate Found")
 			local coordinatePromptText = "Someone found a mysterious crate. \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Mysterious Crate was found at " .. tostring(coordinateString))
 		end 
 		function coordinatePromptWindow.coordinatePromptYesBtn:OnClick()
@@ -92,9 +98,9 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptWindow:Show(false)
 		end
 		coordinatePromptWindow.coordinatePromptYesBtn:SetHandler("OnClick", coordinatePromptWindow.coordinatePromptYesBtn.OnClick)
-		
+		coordinatePromptWindow:Show(true)
 	end 
-	api.Log:Info("[Tier 2 Sextant] " .. tostring(msg))
+	-- api.Log:Info("[Tier 2 Sextant] " .. tostring(msg))
 	-- api.Log:Info("[Tier 2 Sextant] " .. tostring(iconKey))
 	-- api.Log:Info(sextants)
 	-- api.Log:Info(info)
@@ -187,8 +193,20 @@ local function OnLoad()
 		coordinatePromptWindow:Show(false)
 	end
 	coordinatePromptWindow.coordinatePromptNoBtn:SetHandler("OnClick", coordinatePromptWindow.coordinatePromptNoBtn.OnClick)
-
-
+	--- "Unit Testing"
+	-- local msg = "A swarm of Sunfish has appeared at @coordinates!"
+	-- local iconKey = nil
+	-- local sextants = {}
+	-- sextants.longitude = "W"
+	-- sextants.deg_long = 5
+	-- sextants.min_long = 13
+	-- sextants.sec_long = 21
+	-- sextants.latitude = "S"
+	-- sextants.deg_lat = 5
+	-- sextants.min_lat = 57
+	-- sextants.sec_lat = 1
+	-- local info = nil
+	-- openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info) 
 
 	function tier2SextantWindow:OnEvent(event, ...)
         if event == "WORLD_MESSAGE" then
