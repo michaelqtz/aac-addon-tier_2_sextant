@@ -143,7 +143,7 @@ local function OnLoad()
 		if currentCursorItemIndex > 0 then 
 			local currentItemInfo = api.Bag:GetBagItemInfo(1, currentCursorItemIndex)
 			local currentCursorItemName = currentItemInfo.name or nil
-			if currentCursorItemName == "Treasure Map with Coordinates" then 
+			if currentCursorItemName == "Treasure Map with Coordinates" or currentCursorItemName == "Cleaned Map" then 
 				-- Latitude/Longitude
 				local latDir = currentItemInfo.latitudeDir
 				local latDeg = currentItemInfo.latitudeDeg
