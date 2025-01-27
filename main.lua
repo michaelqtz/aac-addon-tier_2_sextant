@@ -3,7 +3,7 @@ local api = require("api")
 local tier_2_sextant_addon = {
 	name = "Tier 2 Sextant",
 	author = "Michaelqt",
-	version = "1.3",
+	version = "1.3.0",
 	desc = "A better version of the sextant."
 }
 
