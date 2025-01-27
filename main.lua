@@ -3,7 +3,7 @@ local api = require("api")
 local tier_2_sextant_addon = {
 	name = "Tier 2 Sextant",
 	author = "Michaelqt",
-	version = "1.1.0",
+	version = "1.3",
 	desc = "A better version of the sextant."
 }
 
@@ -41,6 +41,108 @@ local function longitudeSextantToDegrees(direction, degrees, minutes, seconds)
 	xCoords = degrees + xCoords
 	if direction == "W" then xCoords = xCoords * -1 end
 	return (xCoords + 21) / coordCoef
+end 
+
+local function getCleanedMapCoordsByItemId(itemId)
+	local x = nil
+	local y = nil
+	cleanedMapCoords = {
+		["26705"] = {
+			longitudeSextantToDegrees("W", 6, 24, 6),
+			latitudeSextantToDegrees("S", 5, 59, 19)
+		},
+		["26706"] = {
+			longitudeSextantToDegrees("W", 6, 34, 40),
+			latitudeSextantToDegrees("S", 5, 25, 17)
+		},
+		["26707"] = {
+			longitudeSextantToDegrees("W", 6, 9, 37),
+			latitudeSextantToDegrees("S", 6, 7, 29)
+		},
+		["26723"] = {
+			longitudeSextantToDegrees("W", 5, 58, 34),
+			latitudeSextantToDegrees("S", 6, 25, 10)
+		},
+		["26724"] = {
+			longitudeSextantToDegrees("W", 5, 10, 52),
+			latitudeSextantToDegrees("S", 5, 3, 8)
+		},
+		["26725"] = {
+			longitudeSextantToDegrees("W", 4, 28, 36),
+			latitudeSextantToDegrees("S", 12, 3, 58)
+		},
+		["26726"] = {
+			longitudeSextantToDegrees("W", 4, 34, 29),
+			latitudeSextantToDegrees("S", 12, 21, 12)
+		},
+		["26727"] = {
+			longitudeSextantToDegrees("W", 0, 26, 36),
+			latitudeSextantToDegrees("S", 8, 36, 32)
+		},
+		["28622"] = {
+			longitudeSextantToDegrees("W", 2, 27, 31),
+			latitudeSextantToDegrees("S", 4, 11, 33)
+		},
+		["28623"] = {
+			longitudeSextantToDegrees("W", 2, 6, 57),
+			latitudeSextantToDegrees("S", 3, 28, 36)
+		},
+		["28624"] = {
+			longitudeSextantToDegrees("W", 1, 1, 15),
+			latitudeSextantToDegrees("S", 3, 4, 38)
+		},
+		["28625"] = {
+			longitudeSextantToDegrees("W", 0, 34, 32),
+			latitudeSextantToDegrees("S", 2, 50, 54)
+		},
+		["28626"] = {
+			longitudeSextantToDegrees("W", 0, 26, 30),
+			latitudeSextantToDegrees("S", 2, 41, 46)
+		},
+		["28627"] = {
+			longitudeSextantToDegrees("W", 0, 32, 32),
+			latitudeSextantToDegrees("S", 2, 27, 58)
+		},
+		["28628"] = {
+			longitudeSextantToDegrees("E", 0, 8, 51),
+			latitudeSextantToDegrees("S", 1, 30, 31)
+		},
+		["28629"] = {
+			longitudeSextantToDegrees("E", 0, 21, 26),
+			latitudeSextantToDegrees("S", 1, 20, 18)
+		},
+		["28630"] = {
+			longitudeSextantToDegrees("E", 0, 47, 10),
+			latitudeSextantToDegrees("S", 4, 44, 39)
+		},
+		["28631"] = {
+			longitudeSextantToDegrees("W", 4, 24, 28),
+			latitudeSextantToDegrees("S", 8, 39, 30)
+		},
+		["28632"] = {
+			longitudeSextantToDegrees("W", 4, 10, 42),
+			latitudeSextantToDegrees("S", 8, 49, 35)
+		},
+		["28633"] = {
+			longitudeSextantToDegrees("W", 7, 9, 38),
+			latitudeSextantToDegrees("S", 9, 7, 40)
+		},
+		["28634"] = {
+			longitudeSextantToDegrees("E", 0, 38, 2),
+			latitudeSextantToDegrees("S", 5, 12, 52)
+		},
+		["28635"] = {
+			longitudeSextantToDegrees("W", 2, 41, 16),
+			latitudeSextantToDegrees("S", 17, 52, 39)
+		},
+		["28636"] = {
+			longitudeSextantToDegrees("W", 7, 21, 54),
+			latitudeSextantToDegrees("S", 19, 30, 2)
+		},
+	}
+	x = cleanedMapCoords[tostring(itemId)][1]
+	y = cleanedMapCoords[tostring(itemId)][2]
+	return {longitude=x, latitude=y}
 end 
 
 local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info) 
@@ -143,7 +245,7 @@ local function OnLoad()
 		if currentCursorItemIndex > 0 then 
 			local currentItemInfo = api.Bag:GetBagItemInfo(1, currentCursorItemIndex)
 			local currentCursorItemName = currentItemInfo.name or nil
-			if currentCursorItemName == "Treasure Map with Coordinates" or currentCursorItemName == "Cleaned Map" then 
+			if currentCursorItemName == "Treasure Map with Coordinates" then 
 				-- Latitude/Longitude
 				local latDir = currentItemInfo.latitudeDir
 				local latDeg = currentItemInfo.latitudeDeg
@@ -159,11 +261,17 @@ local function OnLoad()
 				local zoneId = 323 --> TODO: fill this based on map position
 				-- Let's draw that map!
 				api.Map:ToggleMapWithPortal(323, longitude, latitude, 100)
-			end
+			elseif currentCursorItemName == "Cleaned Map" then 
+				local currentItemId = currentItemInfo.itemType
+				local cleanedMapCoords = getCleanedMapCoordsByItemId(currentItemId)
+				api.Map:ToggleMapWithPortal(323, cleanedMapCoords.longitude, cleanedMapCoords.latitude, 100)
+			end 
 		end 
     end 
     clickOverlay:SetHandler("OnClick", clickOverlay.OnClick)
 	
+	-- api.Log:Info(latitudeSextantToDegrees)
+
 	--- Coordinate Prompt for various pop-ups
 	-- Actual window
 	coordinatePromptWindow = api.Interface:CreateWindow("coordinatePromptWindow", "Coordinates Found", 0, 0)
