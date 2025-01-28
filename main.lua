@@ -3,7 +3,7 @@ local api = require("api")
 local tier_2_sextant_addon = {
 	name = "Tier 2 Sextant",
 	author = "Michaelqt",
-	version = "1.3.0",
+	version = "1.3.1",
 	desc = "A better version of the sextant."
 }
 
@@ -13,11 +13,22 @@ local coordinatePromptWindow
 local coordinatePromptLabel
 
 local clockTimer = 0
-local clockResetTime = 1000
+local clockResetTime = 10000
 local function OnUpdate(dt)
     if clockTimer + dt > clockResetTime then
-
+		-- Only show the map button window if there is a treasure map in the bag.
+		local bagFrame = ADDON:GetContent(UIC.BAG)
 		clockTimer = 0
+		local mapFound = false
+		for key, value in pairs(bagFrame.slots.btns) do
+			local bagItemInfo = bagFrame.slots.btns[key]:GetInfo()
+			if bagItemInfo.name ~= nil then 
+				if bagItemInfo.name == "Treasure Map with Coordinates" or bagItemInfo.name == "Cleaned Map" then 
+					mapFound = true
+				end 
+			end 
+		end 
+		tier2SextantWindow:Show(mapFound)
     end 
     clockTimer = clockTimer + dt
 end 
