@@ -22,7 +22,7 @@ local function OnUpdate(dt)
 		local mapFound = false
 		for key, value in pairs(bagFrame.slots.btns) do
 			local bagItemInfo = bagFrame.slots.btns[key]:GetInfo()
-			if bagItemInfo.name ~= nil then 
+			if bagItemInfo ~= nil then 
 				if bagItemInfo.name == "Treasure Map with Coordinates" or bagItemInfo.name == "Cleaned Map" then 
 					mapFound = true
 				end 
