@@ -34,7 +34,7 @@ local function OnUpdate(dt)
 end 
 
 
-local function latitudeSextantToDegrees(direction, degrees, minutes, seconds)
+function tier_2_sextant_addon.latitudeSextantToDegrees(direction, degrees, minutes, seconds)
 	local coordCoef = 0.00097657363894522145695357130138029 
 	local yCoords = 0
 	yCoords = seconds / 60
@@ -44,7 +44,7 @@ local function latitudeSextantToDegrees(direction, degrees, minutes, seconds)
 	return (yCoords + 28) / coordCoef
 
 end
-local function longitudeSextantToDegrees(direction, degrees, minutes, seconds) 
+function tier_2_sextant_addon.longitudeSextantToDegrees(direction, degrees, minutes, seconds)
 	local coordCoef = 0.00097657363894522145695357130138029 
 	local xCoords = 0
 	xCoords = seconds / 60
@@ -59,96 +59,96 @@ local function getCleanedMapCoordsByItemId(itemId)
 	local y = nil
 	cleanedMapCoords = {
 		["26705"] = {
-			longitudeSextantToDegrees("W", 6, 24, 6),
-			latitudeSextantToDegrees("S", 5, 59, 19)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 6, 24, 6),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 5, 59, 19)
 		},
 		["26706"] = {
-			longitudeSextantToDegrees("W", 6, 34, 40),
-			latitudeSextantToDegrees("S", 5, 25, 17)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 6, 34, 40),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 5, 25, 17)
 		},
 		["26707"] = {
-			longitudeSextantToDegrees("W", 6, 9, 37),
-			latitudeSextantToDegrees("S", 6, 7, 29)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 6, 9, 37),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 6, 7, 29)
 		},
 		["26723"] = {
-			longitudeSextantToDegrees("W", 5, 58, 34),
-			latitudeSextantToDegrees("S", 6, 25, 10)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 5, 58, 34),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 6, 25, 10)
 		},
 		["26724"] = {
-			longitudeSextantToDegrees("W", 5, 10, 52),
-			latitudeSextantToDegrees("S", 5, 3, 8)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 5, 10, 52),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 5, 3, 8)
 		},
 		["26725"] = {
-			longitudeSextantToDegrees("W", 4, 28, 36),
-			latitudeSextantToDegrees("S", 12, 3, 58)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 4, 28, 36),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 12, 3, 58)
 		},
 		["26726"] = {
-			longitudeSextantToDegrees("W", 4, 34, 29),
-			latitudeSextantToDegrees("S", 12, 21, 12)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 4, 34, 29),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 12, 21, 12)
 		},
 		["26727"] = {
-			longitudeSextantToDegrees("W", 0, 26, 36),
-			latitudeSextantToDegrees("S", 8, 36, 32)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 0, 26, 36),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 8, 36, 32)
 		},
 		["28622"] = {
-			longitudeSextantToDegrees("W", 2, 27, 31),
-			latitudeSextantToDegrees("S", 4, 11, 33)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 2, 27, 31),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 4, 11, 33)
 		},
 		["28623"] = {
-			longitudeSextantToDegrees("W", 2, 6, 57),
-			latitudeSextantToDegrees("S", 3, 28, 36)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 2, 6, 57),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 3, 28, 36)
 		},
 		["28624"] = {
-			longitudeSextantToDegrees("W", 1, 1, 15),
-			latitudeSextantToDegrees("S", 3, 4, 38)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 1, 1, 15),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 3, 4, 38)
 		},
 		["28625"] = {
-			longitudeSextantToDegrees("W", 0, 34, 32),
-			latitudeSextantToDegrees("S", 2, 50, 54)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 0, 34, 32),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 2, 50, 54)
 		},
 		["28626"] = {
-			longitudeSextantToDegrees("W", 0, 26, 30),
-			latitudeSextantToDegrees("S", 2, 41, 46)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 0, 26, 30),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 2, 41, 46)
 		},
 		["28627"] = {
-			longitudeSextantToDegrees("W", 0, 32, 32),
-			latitudeSextantToDegrees("S", 2, 27, 58)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 0, 32, 32),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 2, 27, 58)
 		},
 		["28628"] = {
-			longitudeSextantToDegrees("E", 0, 8, 51),
-			latitudeSextantToDegrees("S", 1, 30, 31)
+			tier_2_sextant_addon.longitudeSextantToDegrees("E", 0, 8, 51),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 1, 30, 31)
 		},
 		["28629"] = {
-			longitudeSextantToDegrees("E", 0, 21, 26),
-			latitudeSextantToDegrees("S", 1, 20, 18)
+			tier_2_sextant_addon.longitudeSextantToDegrees("E", 0, 21, 26),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 1, 20, 18)
 		},
 		["28630"] = {
-			longitudeSextantToDegrees("E", 0, 47, 10),
-			latitudeSextantToDegrees("S", 4, 44, 39)
+			tier_2_sextant_addon.longitudeSextantToDegrees("E", 0, 47, 10),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 4, 44, 39)
 		},
 		["28631"] = {
-			longitudeSextantToDegrees("W", 4, 24, 28),
-			latitudeSextantToDegrees("S", 8, 39, 30)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 4, 24, 28),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 8, 39, 30)
 		},
 		["28632"] = {
-			longitudeSextantToDegrees("W", 4, 10, 42),
-			latitudeSextantToDegrees("S", 8, 49, 35)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 4, 10, 42),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 8, 49, 35)
 		},
 		["28633"] = {
-			longitudeSextantToDegrees("W", 7, 9, 38),
-			latitudeSextantToDegrees("S", 9, 7, 40)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 7, 9, 38),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 9, 7, 40)
 		},
 		["28634"] = {
-			longitudeSextantToDegrees("E", 0, 38, 2),
-			latitudeSextantToDegrees("S", 5, 12, 52)
+			tier_2_sextant_addon.longitudeSextantToDegrees("E", 0, 38, 2),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 5, 12, 52)
 		},
 		["28635"] = {
-			longitudeSextantToDegrees("W", 2, 41, 16),
-			latitudeSextantToDegrees("S", 17, 52, 39)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 2, 41, 16),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 17, 52, 39)
 		},
 		["28636"] = {
-			longitudeSextantToDegrees("W", 7, 21, 54),
-			latitudeSextantToDegrees("S", 19, 30, 2)
+			tier_2_sextant_addon.longitudeSextantToDegrees("W", 7, 21, 54),
+			tier_2_sextant_addon.latitudeSextantToDegrees("S", 19, 30, 2)
 		},
 	}
 	x = cleanedMapCoords[tostring(itemId)][1]
@@ -165,12 +165,12 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 		local latDeg = sextants.deg_lat
 		local latMin = sextants.min_lat
 		local latSec = sextants.sec_lat
-		local latitude = latitudeSextantToDegrees(latDir, latDeg, latMin, latSec)
+		local latitude = tier_2_sextant_addon.latitudeSextantToDegrees(latDir, latDeg, latMin, latSec)
 		local lonDir = sextants.longitude
 		local lonDeg = sextants.deg_long
 		local lonMin = sextants.min_long
 		local lonSec = sextants.sec_long
-		local longitude = longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
+		local longitude = tier_2_sextant_addon.longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
 
 		local coordinateString = lonDir .. " " .. lonDeg .. " " .. lonMin .. " " .. lonSec .. " " .. latDir .. " " .. latDeg .. " " .. latMin .. " " .. latSec
 
@@ -262,12 +262,12 @@ local function OnLoad()
 				local latDeg = currentItemInfo.latitudeDeg
 				local latMin = currentItemInfo.latitudeMin
 				local latSec = currentItemInfo.latitudeSec
-				local latitude = latitudeSextantToDegrees(latDir, latDeg, latMin, latSec)
+				local latitude = tier_2_sextant_addon.latitudeSextantToDegrees(latDir, latDeg, latMin, latSec)
 				local lonDir = currentItemInfo.longitudeDir
 				local lonDeg = currentItemInfo.longitudeDeg
 				local lonMin = currentItemInfo.longitudeMin
 				local lonSec = currentItemInfo.longitudeSec
-				local longitude = longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
+				local longitude = tier_2_sextant_addon.longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
 				-- Zone for the window to be opened to: (323 is an instance)
 				local zoneId = 323 --> TODO: fill this based on map position
 				-- Let's draw that map!
@@ -281,7 +281,7 @@ local function OnLoad()
     end 
     clickOverlay:SetHandler("OnClick", clickOverlay.OnClick)
 	
-	-- api.Log:Info(latitudeSextantToDegrees)
+	-- api.Log:Info(tier_2_sextant_addon.latitudeSextantToDegrees)
 
 	--- Coordinate Prompt for various pop-ups
 	-- Actual window
