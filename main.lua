@@ -1,4 +1,5 @@
 local api = require("api")
+local michaelClientLib = require("tier_2_sextant/michael_client")
 
 local tier_2_sextant_addon = {
 	name = "Tier 2 Sextant",
@@ -8,6 +9,7 @@ local tier_2_sextant_addon = {
 }
 
 local tier2SextantWindow
+local settingsWindow
 local treasureMapBtn
 local coordinatePromptWindow
 local coordinatePromptLabel
@@ -157,6 +159,18 @@ local function getCleanedMapCoordsByItemId(itemId)
 end 
 
 local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info) 
+	local settings = api.File:Read("tier_2_sextant/settings.lua")
+	if settings == nil then 
+		settings = {}
+		settings.sunfish = true
+		settings.perdita = true
+		settings.leviathan = true
+		settings.territory_goods = true
+		settings.territory_warehouse = true
+		settings.mysterious_crate = true
+		settings.delphinad_ghost_ship = true
+		
+	end
 	keyWord = "@coordinates"
     isCoordsFound = string.find(msg, keyWord)
 	if isCoordsFound then 
@@ -173,45 +187,71 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 		local longitude = longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
 
 		local coordinateString = lonDir .. " " .. lonDeg .. " " .. lonMin .. " " .. lonSec .. " " .. latDir .. " " .. latDeg .. " " .. latMin .. " " .. latSec
-
+		local isShown = true
 		-- Adjust the prompt window based on type of coordinates
 		if string.find(msg, "swarm of Sunfish") then 
+			if settings.sunfish == false then 
+				isShown = false
+			end
 			coordinatePromptWindow:SetTitle("Sunfish Found")
 			local coordinatePromptText = "A swarm of Sunfish has been found! \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Swarm of Sunfish found at " .. tostring(coordinateString))
 		elseif string.find(msg, "Perdita Statue Torso") then 
+			if settings.perdita == false then 
+				isShown = false
+			end
 			coordinatePromptWindow:SetTitle("Perdita Found")
 			local coordinatePromptText = "A Perdita Statue Torso pack has been found! \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Perdita Statue Torso pack found at " .. tostring(coordinateString))
 		elseif string.find(msg, "Leviathan carcass") then 
+			if settings.leviathan == false then 
+				isShown = false
+			end
 			coordinatePromptWindow:SetTitle("Leviathan Dead")
 			local coordinatePromptText = "Leviathan is super dead! \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Leviathan's dead corpse is at " .. tostring(coordinateString))
 		elseif string.find(msg, "are being unlocked") then 
+			if settings.territory_goods == false then 
+				isShown = false
+			end
 			coordinatePromptWindow:SetTitle("Stolen Goods Unlocking")
 			local coordinatePromptText = "Territory goods are being unlocked. \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Territory goods are being unlocked at " .. tostring(coordinateString))
 		elseif string.find(msg, "Territory Warehouse") then 
+			if settings.territory_warehouse == false then 
+				isShown = false
+			end
 			coordinatePromptWindow:SetTitle("Warehouse Looted")
 			local coordinatePromptText = "A territory warehouse has been looted! \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Territory Warehouse was looted at " .. tostring(coordinateString))
 		elseif string.find(msg, "mysterious crate") then 
+			if settings.mysterious_crate == false then 
+				isShown = false
+			end
 			coordinatePromptWindow:SetTitle("Mysterious Crate Found")
 			local coordinatePromptText = "Someone found a mysterious crate. \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Mysterious Crate was found at " .. tostring(coordinateString))
-		end 
+		elseif string.find(msg, "Delphinad Ghost Ship") then 
+			if settings.delphinad_ghost_ship == false then 
+				isShown = false
+			end
+			coordinatePromptWindow:SetTitle("Delphinad Ghost Ship Found")
+			local coordinatePromptText = "A Delphinad Ghost Ship has been killed! \n \n  Would you like to find it on your map?"
+			coordinatePromptLabel:SetText(coordinatePromptText)
+			api.Log:Info("[Tier 2 Sextant] A Delphinad Ghost Ship was killed at " .. tostring(coordinateString))
+		end
 		function coordinatePromptWindow.coordinatePromptYesBtn:OnClick()
 			api.Map:ToggleMapWithPortal(323, longitude, latitude, 100)
 			coordinatePromptWindow:Show(false)
 		end
 		coordinatePromptWindow.coordinatePromptYesBtn:SetHandler("OnClick", coordinatePromptWindow.coordinatePromptYesBtn.OnClick)
-		coordinatePromptWindow:Show(true)
+		coordinatePromptWindow:Show(isShown)
 	end 
 	-- api.Log:Info("[Tier 2 Sextant] " .. tostring(msg))
 	-- api.Log:Info("[Tier 2 Sextant] " .. tostring(iconKey))
@@ -220,11 +260,11 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 end 
 
 local function OnLoad()
-	local settings = api.GetSettings("tier_2_sextant_addon")
-	--
+	local settings = api.File:Read("tier_2_sextant/settings.lua")
+	-- Main Window
 	local bagFrame = ADDON:GetContent(UIC.BAG)
 	tier2SextantWindow = bagFrame:CreateChildWidget("label", "tier2SextantWindow", 0, true)
-	tier2SextantWindow:AddAnchor("BOTTOMLEFT", bagFrame, -80, -5)
+	tier2SextantWindow:AddAnchor("BOTTOMLEFT", bagFrame, -80, -25)
 	tier2SextantWindow:SetExtent(80, 90)
 	-- Main Window Background Styling
 	tier2SextantWindow.bg = tier2SextantWindow:CreateNinePartDrawable("ui/common/tab_list.dds", "background")
@@ -233,6 +273,80 @@ local function OnLoad()
 	tier2SextantWindow.bg:AddAnchor("TOPLEFT", tier2SextantWindow, 0, 0)
 	tier2SextantWindow.bg:AddAnchor("BOTTOMRIGHT", tier2SextantWindow, 0, 0)
 
+	-- Settings Window
+	settingsWindow = api.Interface:CreateWindow("settingsWindow", "Tier 2 Sextant Settings", 0, 0)
+	settingsWindow:AddAnchor("CENTER", "UIParent", 0, 0)
+	settingsWindow:SetExtent(300, 260)
+	settingsWindow:Show(false)
+	-- Add checkboxes for notification types
+	local notificationTypes = {
+		["sunfish"] = "Sunfish",
+		["perdita"] = "Perdita Statue Torso",
+		["leviathan"] = "Leviathan",
+		["territory_goods"] = "Territory Goods",
+		["territory_warehouse"] = "Territory Warehouse",
+		["mysterious_crate"] = "Mysterious Crate ",
+		["delphinad_ghost_ship"] = "Delphinad Ghost Ship"
+	}
+	local counter = 1
+	for key, value in pairs(notificationTypes) do
+		local checkbox = api.Interface:CreateWidget("button", "checkbutton_" .. counter, settingsWindow)
+		checkbox:SetText(value)
+		ApplyButtonSkin(checkbox, BUTTON_BASIC.DEFAULT)
+		checkbox:AddAnchor("TOPLEFT", settingsWindow, 10, ((counter) * 30) + 10)
+		checkbox:SetExtent(280, 30)
+		local actualCheckbox = checkbox:CreateNinePartDrawable("ui/common/tab_list.dds", "background")
+		actualCheckbox:SetTextureInfo("tab_selected_df")
+		actualCheckbox:AddAnchor("TOPLEFT", checkbox, 0, 0)
+		actualCheckbox:AddAnchor("BOTTOMRIGHT", checkbox, 0, 0)
+		
+		if settings[key] ~= nil then 
+			if settings[key] == false then 
+				actualCheckbox:SetColor(1, 0, 0, 0.3)
+			else
+				actualCheckbox:SetColor(0, 1, 0, 0.3)
+			end
+		end
+		
+		
+		
+		-- checkbox:SetChecked(settings[key] or false)
+		function checkbox:OnClick()
+			settings = api.File:Read("tier_2_sextant/settings.lua")
+			if settings == nil then 
+				settings = {}
+			end
+			
+			if settings[key] == nil then 
+				settings[key] = true
+			end
+			settings[key] = not settings[key]
+			
+			-- api.Log:Info("[Tier 2 Sextant] Setting " .. value .. " to " .. tostring(settings[key]))
+
+			if settings[key] == false then 
+				actualCheckbox:SetColor(1, 0, 0, 0.3)
+			else
+				actualCheckbox:SetColor(0, 1, 0, 0.3)
+			end
+
+			api.File:Write("tier_2_sextant/settings.lua", settings)
+		end
+		checkbox:SetHandler("OnClick", checkbox.OnClick)
+		counter = counter + 1
+	end
+
+	michaelClientLib:initializeMichaelClient()
+	local configMenu = ADDON:GetContent(UIC.SYSTEM_CONFIG_FRAME)
+	configMenu.michaelClient:AddAddon("Tier 2 Sextant", function()
+		settingsWindow:Show(true)
+	end)
+
+	-- TODO: remove later
+	-- settingsWindow:Show(true)
+
+
+	-- Map Button
 	local textbox = tier2SextantWindow:CreateChildWidget("textbox", "textbox", 0, true)
     textbox:AddAnchor("TOPLEFT", tier2SextantWindow, 0, -10)
     textbox:AddAnchor("BOTTOMRIGHT", tier2SextantWindow, 0, -40)
@@ -340,6 +454,7 @@ local function OnLoad()
 end
 
 local function OnUnload()
+	api.GetSettings("tier_2_sextant_addon")
 	api.On("UPDATE", function() return end)
 	-- tier2SextantWindow = api.Interface:Free(tier2SextantWindow)
 	if tier2SextantWindow ~= nil then 
@@ -351,6 +466,11 @@ local function OnUnload()
 		-- treasureMapBtn:Show(false)
 		treasureMapBtn = nil
 	end 
+
+	michaelClientLib:OnUnload()
+
+	api.Interface:Free(settingsWindow)
+	api.SaveSettings()
 end
 
 tier_2_sextant_addon.OnLoad = OnLoad
