@@ -187,6 +187,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 		local longitude = longitudeSextantToDegrees(lonDir, lonDeg, lonMin, lonSec)
 
 		local coordinateString = lonDir .. " " .. lonDeg .. " " .. lonMin .. " " .. lonSec .. " " .. latDir .. " " .. latDeg .. " " .. latMin .. " " .. latSec
+		-- api.Log:Info(msg)
 		local isShown = true
 		-- Adjust the prompt window based on type of coordinates
 		if string.find(msg, "swarm of Sunfish") then 
@@ -237,7 +238,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			local coordinatePromptText = "Someone found a mysterious crate. \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Mysterious Crate was found at " .. tostring(coordinateString))
-		elseif string.find(msg, "has been destroyed at") then 
+		elseif string.find(msg, "has been |cFFF5CB65destroyed") then 
 			if settings.delphinad_ghost_ship == false then 
 				isShown = false
 			end
