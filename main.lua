@@ -237,7 +237,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			local coordinatePromptText = "Someone found a mysterious crate. \n \n  Would you like to find it on your map?"
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Mysterious Crate was found at " .. tostring(coordinateString))
-		elseif string.find(msg, "Delphinad Ghost Ship") then 
+		elseif string.find(msg, "has been destroyed at") then 
 			if settings.delphinad_ghost_ship == false then 
 				isShown = false
 			end
