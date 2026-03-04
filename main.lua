@@ -1,5 +1,6 @@
 local api = require("api")
 local michaelClientLib = require("tier_2_sextant/michael_client")
+local settings = require("tier_2_sextant/settings")
 
 local tier_2_sextant_addon = {
 	name = "Tier 2 Sextant",
@@ -159,18 +160,6 @@ local function getCleanedMapCoordsByItemId(itemId)
 end 
 
 local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info) 
-	local settings = api.File:Read("tier_2_sextant/settings.lua")
-	if settings == nil then 
-		settings = {}
-		settings.sunfish = true
-		settings.perdita = true
-		settings.leviathan = true
-		settings.territory_goods = true
-		settings.territory_warehouse = true
-		settings.mysterious_crate = true
-		settings.delphinad_ghost_ship = true
-		
-	end
 	keyWord = "@coordinates"
     isCoordsFound = string.find(msg, keyWord)
 	if isCoordsFound then 
@@ -191,7 +180,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 		local isShown = true
 		-- Adjust the prompt window based on type of coordinates
 		if string.find(msg, "swarm of Sunfish") then 
-			if settings.sunfish == false then 
+			if settings.Get("sunfish") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Sunfish Found")
@@ -199,7 +188,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Swarm of Sunfish found at " .. tostring(coordinateString))
 		elseif string.find(msg, "Perdita Statue Torso") then 
-			if settings.perdita == false then 
+			if settings.Get("perdita") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Perdita Found")
@@ -207,7 +196,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Perdita Statue Torso pack found at " .. tostring(coordinateString))
 		elseif string.find(msg, "Leviathan carcass") then 
-			if settings.leviathan == false then 
+			if settings.Get("leviathan") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Leviathan Dead")
@@ -215,7 +204,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Leviathan's dead corpse is at " .. tostring(coordinateString))
 		elseif string.find(msg, "are being unlocked") then 
-			if settings.territory_goods == false then 
+			if settings.Get("territory_goods") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Stolen Goods Unlocking")
@@ -223,7 +212,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] Territory goods are being unlocked at " .. tostring(coordinateString))
 		elseif string.find(msg, "Territory Warehouse") then 
-			if settings.territory_warehouse == false then 
+			if settings.Get("territory_warehouse") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Warehouse Looted")
@@ -231,7 +220,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Territory Warehouse was looted at " .. tostring(coordinateString))
 		elseif string.find(msg, "mysterious crate") then 
-			if settings.mysterious_crate == false then 
+			if settings.Get("mysterious_crate") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Mysterious Crate Found")
@@ -239,7 +228,7 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 			coordinatePromptLabel:SetText(coordinatePromptText)
 			api.Log:Info("[Tier 2 Sextant] A Mysterious Crate was found at " .. tostring(coordinateString))
 		elseif string.find(msg, "has been |cFFF5CB65destroyed") then 
-			if settings.delphinad_ghost_ship == false then 
+			if settings.Get("delphinad_ghost_ship") == false then 
 				isShown = false
 			end
 			coordinatePromptWindow:SetTitle("Delphinad Ghost Ship Found")
@@ -261,7 +250,6 @@ local function openCoordsPromptFromWorldMessage(msg, iconKey, sextants, info)
 end 
 
 local function OnLoad()
-	local settings = api.File:Read("tier_2_sextant/settings.lua")
 	-- Main Window
 	local bagFrame = ADDON:GetContent(UIC.BAG)
 	tier2SextantWindow = bagFrame:CreateChildWidget("label", "tier2SextantWindow", 0, true)
@@ -301,8 +289,8 @@ local function OnLoad()
 		actualCheckbox:AddAnchor("TOPLEFT", checkbox, 0, 0)
 		actualCheckbox:AddAnchor("BOTTOMRIGHT", checkbox, 0, 0)
 		
-		if settings[key] ~= nil then 
-			if settings[key] == false then 
+		if settings.Get(key) ~= nil then 
+			if settings.Get(key) == false then 
 				actualCheckbox:SetColor(1, 0, 0, 0.3)
 			else
 				actualCheckbox:SetColor(0, 1, 0, 0.3)
@@ -313,25 +301,18 @@ local function OnLoad()
 		
 		-- checkbox:SetChecked(settings[key] or false)
 		function checkbox:OnClick()
-			settings = api.File:Read("tier_2_sextant/settings.lua")
-			if settings == nil then 
-				settings = {}
+			if settings.Get(key) == nil then 
+				settings.Set(key, true)
 			end
-			
-			if settings[key] == nil then 
-				settings[key] = true
-			end
-			settings[key] = not settings[key]
-			
-			-- api.Log:Info("[Tier 2 Sextant] Setting " .. value .. " to " .. tostring(settings[key]))
-
-			if settings[key] == false then 
+			local oldvalue = settings.Get(key)
+			local newvalue = not oldvalue
+			settings.Set(key, newvalue)
+			if settings.Get(key) == false then 
 				actualCheckbox:SetColor(1, 0, 0, 0.3)
 			else
+				
 				actualCheckbox:SetColor(0, 1, 0, 0.3)
 			end
-
-			api.File:Write("tier_2_sextant/settings.lua", settings)
 		end
 		checkbox:SetHandler("OnClick", checkbox.OnClick)
 		counter = counter + 1
@@ -451,11 +432,9 @@ local function OnLoad()
     tier2SextantWindow:RegisterEvent("WORLD_MESSAGE")
 
     api.On("UPDATE", OnUpdate)
-	api.SaveSettings()
 end
 
 local function OnUnload()
-	api.GetSettings("tier_2_sextant_addon")
 	api.On("UPDATE", function() return end)
 	-- tier2SextantWindow = api.Interface:Free(tier2SextantWindow)
 	if tier2SextantWindow ~= nil then 
@@ -471,7 +450,6 @@ local function OnUnload()
 	michaelClientLib:OnUnload()
 
 	api.Interface:Free(settingsWindow)
-	api.SaveSettings()
 end
 
 tier_2_sextant_addon.OnLoad = OnLoad
